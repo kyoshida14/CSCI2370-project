@@ -16,6 +16,7 @@ pip install trame
 pip install trame-vuetify trame-vtk
 pip install vtk
 pip install trame-components
+pip install --upgrade trame-plotly
 ```
 
 3. Create `pvenv` for paraview
