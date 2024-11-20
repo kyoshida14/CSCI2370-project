@@ -8119,11 +8119,11 @@
     </Proxy>
     <Proxy group="sources" type="CSVReader" id="11634" servers="1">
       <Property name="FileName" id="11634.FileName" number_of_elements="1">
-        <Element index="0" value="/Users/kyoshid1/Documents/GitHub/CSCI2370/CSCI2370-project/data/coordinates_with_agent_types.csv"/>
+        <Element index="0" value="/Users/kyoshid1/Documents/GitHub/CSCI2370/CSCI2370-project/data/pvsm/coordinates_with_agent_types.csv"/>
         <Domain name="files" id="11634.FileName.files"/>
       </Property>
       <Property name="FileNameInfo" id="11634.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="/Users/kyoshid1/Documents/GitHub/CSCI2370/CSCI2370-project/data/coordinates_with_agent_types.csv"/>
+        <Element index="0" value="/Users/kyoshid1/Documents/GitHub/CSCI2370/CSCI2370-project/data/pvsm/coordinates_with_agent_types.csv"/>
       </Property>
       <Property name="TimestepValues" id="11634.TimestepValues"/>
       <Property name="AddTabFieldDelimiter" id="11634.AddTabFieldDelimiter" number_of_elements="1">
@@ -8152,20 +8152,20 @@
     </Proxy>
     <Proxy group="sources" type="LegacyVTKFileReader" id="12447" servers="1">
       <Property name="FileNameInfo" id="12447.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="/Users/kyoshid1/Documents/GitHub/CSCI2370/CSCI2370-project/data/outputDachNigerialatest.vtk"/>
+        <Element index="0" value="/Users/kyoshid1/Documents/GitHub/CSCI2370/CSCI2370-project/data/pvsm/outputDachNigerialatest.vtk"/>
       </Property>
       <Property name="FileNames" id="12447.FileNames" number_of_elements="1">
-        <Element index="0" value="/Users/kyoshid1/Documents/GitHub/CSCI2370/CSCI2370-project/data/outputDachNigerialatest.vtk"/>
+        <Element index="0" value="/Users/kyoshid1/Documents/GitHub/CSCI2370/CSCI2370-project/data/pvsm/outputDachNigerialatest.vtk"/>
         <Domain name="files" id="12447.FileNames.files"/>
       </Property>
       <Property name="TimestepValues" id="12447.TimestepValues"/>
     </Proxy>
     <Proxy group="sources" type="stlreader" id="10089" servers="1">
       <Property name="FileNameInfo" id="10089.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="/Users/kyoshid1/Documents/GitHub/CSCI2370/CSCI2370-project/data/standing.stl"/>
+        <Element index="0" value="/Users/kyoshid1/Documents/GitHub/CSCI2370/CSCI2370-project/data/pvsm/standing.stl"/>
       </Property>
       <Property name="FileNames" id="10089.FileNames" number_of_elements="1">
-        <Element index="0" value="/Users/kyoshid1/Documents/GitHub/CSCI2370/CSCI2370-project/data/standing.stl"/>
+        <Element index="0" value="/Users/kyoshid1/Documents/GitHub/CSCI2370/CSCI2370-project/data/pvsm/standing.stl"/>
         <Domain name="files" id="10089.FileNames.files"/>
       </Property>
       <Property name="TimestepValues" id="10089.TimestepValues"/>
