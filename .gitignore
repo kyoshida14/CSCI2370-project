@@ -3,3 +3,4 @@
 /code/_test.*
 **/archived/**
 **/testing/**
+.DS_Store
