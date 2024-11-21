@@ -1,22 +1,21 @@
 import pandas as pd
 
-input_file = 'data/Latest Data on Lassa fever77.csv'
-df = pd.read_csv(input_file)
+def format_csv(file_path):
+    df = pd.read_csv(file_path)
+    columns_to_keep = ['Time', 'S_H', 'E_H', 'E_TH', 'E_NT', 'I_H', 'I_QH', 'D_H']
+    df = df[columns_to_keep]
+    return df
 
-df.rename(columns={'Time (days)': 'Time'}, inplace=True)
+def save_csv(df, output_file):
+    df.to_csv(output_file, index=False)
 
-# rename the columns to keep only the text inside the parentheses
-df.columns = [col.split('(')[-1].strip(')') if '(' in col else col for col in df.columns]
+def main():
+    # files = ['data/SimData1.csv', 'data/SimData2.csv', 'data/SimData3.csv']
+    files = ['data/Latest Data on Lassa fever77.csv']
+    for file in files:
+        df = format_csv(file)
+        save_csv(df, file.replace('.csv', '_HumansOnly.csv'))
+    print("Data has been reformatted and saved to the respective files.")
 
-df_melted = df.melt(id_vars=['Time'], 
-                    var_name='Category', 
-                    value_name='Value')
-
-category_mapping = {category: idx for idx, category in enumerate(df_melted['Category'].unique())}
-df_melted['Category_num'] = df_melted['Category'].map(category_mapping)
-
-output_file = 'data/reformatted_LassaFever77.csv'
-df_melted.to_csv(output_file, index=False)
-
-print(f"Data has been reformatted and saved to {output_file}")
-
+if __name__ == '__main__':
+    main()    
