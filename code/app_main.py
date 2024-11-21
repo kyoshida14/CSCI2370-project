@@ -109,7 +109,7 @@ def get_3d_viz(day):
         data=[go.Bar(x=["day-10", "day", "day+10"], y=[day - 10, day, day + 10])],
     )
     fig.update_layout(
-        title="3D Visualization",
+        title="3D Visualization (Placeholder)",
         scene=dict(
             xaxis=dict(title='X'),
             yaxis=dict(title='Y'),
