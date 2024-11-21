@@ -57,19 +57,16 @@ renderWindowInteractor.GetInteractorStyle().SetCurrentStyleToTrackballCamera()
 # Read the data for all days
 day_readers = {}
 
+# Create mapper and actor for the Glyphs
+mapper = vtkPolyDataMapper()
+actor = vtkActor()
+actor.SetMapper(mapper)
+
+## NOTE: if you want to statistically visualize the data for day 0, uncomment the line below
 # reader_day0 = vtkPolyDataReader()
 # reader_day0.SetFileName(day0_vtk_path)
 # reader_day0.Update()
-# reader_day1 = vtkPolyDataReader()
-# reader_day1.SetFileName(day1_vtk_path)
-# reader_day1.Update()
-
-# Create mapper and actor for the Glyphs
-mapper = vtkPolyDataMapper()
-## NOTE: if you want to statistically visualize the data for day 0, uncomment the line below
 # mapper.SetInputConnection(reader_day0.GetOutputPort())
-actor = vtkActor()
-actor.SetMapper(mapper)
 
 # Read the map data
 reader_map = vtkPolyDataReader()
