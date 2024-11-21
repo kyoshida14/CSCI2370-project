@@ -1,11 +1,12 @@
 '''
 To run:
-    /Applications/ParaView-5.13.0.app/Contents/bin/pvpython \
-    code/PVSMLoader.py  \
-    --venv .pvenv/ \
-    --data day0_1.pvsm
 
+/Applications/ParaView-5.13.0.app/Contents/bin/pvpython \
+code/PVSMLoader.py  \
+--venv .pvenv/ \
+--data data/pvsm/day0_vis.pvsm
 '''
+
 from paraview.web import venv  # Available in PV 5.10-RC2+
 from paraview import simple
 
