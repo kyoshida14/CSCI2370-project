@@ -1,6 +1,5 @@
 .venv
 .pvenv
-/code/_test.*
-**/archived/**
-**/testing/**
+**/archived
+_testing**
 .DS_Store
