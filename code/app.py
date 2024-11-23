@@ -13,6 +13,8 @@ import pandas as pd
 import sys
 import plotly.graph_objects as go
 import os
+import numpy as np
+import time
 
 from vtkmodules.vtkIOLegacy import vtkPolyDataReader
 from vtkmodules.vtkRenderingCore import (
@@ -22,17 +24,23 @@ from vtkmodules.vtkRenderingCore import (
     vtkRenderWindow,
     vtkRenderWindowInteractor,
 )
+from vtkmodules.vtkInteractionStyle import vtkInteractorStyleTrackballCamera
+from vtkmodules.vtkCommonCore import vtkUnsignedCharArray
 
 CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(__file__))
 
 
 # -----------------------------------------------------------------------------
-# Modify here
+# Paths
 # -----------------------------------------------------------------------------
+# Modify here
+data_filename = "Latest_Data_on_Lassa_fever77_HumansOnly"
 
-data_path = os.path.join(CURRENT_DIRECTORY, "../data/Latest_Data_on_Lassa_fever77_HumansOnly.csv")
-vtk_dir = os.path.join(CURRENT_DIRECTORY, "../data/vtk")
-map_vtk_path = os.path.join(CURRENT_DIRECTORY, "../data/vtk/map.vtk")
+# No need to modify below
+data_dir = os.path.join(CURRENT_DIRECTORY, f"../data/{data_filename}")
+data_path = os.path.join(data_dir, f"{data_filename}.csv")
+vtk_dir = os.path.join(data_dir, "dayx_vis_vtk")
+map_vtk_path = os.path.join(CURRENT_DIRECTORY, "../data/map.vtk")
 
 # -----------------------------------------------------------------------------
 # Data loading
@@ -50,23 +58,23 @@ df['Time'] = df['Time'].astype(int)
 renderer = vtkRenderer()
 renderWindow = vtkRenderWindow()
 renderWindow.AddRenderer(renderer)
+
 renderWindowInteractor = vtkRenderWindowInteractor()
 renderWindowInteractor.SetRenderWindow(renderWindow)
-renderWindowInteractor.GetInteractorStyle().SetCurrentStyleToTrackballCamera()
+# renderWindowInteractor.GetInteractorStyle().SetCurrentStyleToTrackballCamera()
+style = vtkInteractorStyleTrackballCamera()
+renderWindowInteractor.SetInteractorStyle(style)
 
-# Read the data for all days
+# Read the day VTK file as user selects the day
 day_readers = {}
 
 # Create mapper and actor for the Glyphs
 mapper = vtkPolyDataMapper()
+## NOTE: if you want to statistically visualize the data for day 0, uncomment the line below
+# mapper.SetInputConnection(reader_day0.GetOutputPort())
+
 actor = vtkActor()
 actor.SetMapper(mapper)
-
-## NOTE: if you want to statistically visualize the data for day 0, uncomment the line below
-# reader_day0 = vtkPolyDataReader()
-# reader_day0.SetFileName(day0_vtk_path)
-# reader_day0.Update()
-# mapper.SetInputConnection(reader_day0.GetOutputPort())
 
 # Read the map data
 reader_map = vtkPolyDataReader()
@@ -162,6 +170,50 @@ def get_3d_viz(day):
     )
     return fig
 
+def hex_to_rgb(hex_color):
+    """Convert hex color (e.g., '#FF5733') to normalized RGB (0-1)."""
+    hex_color = hex_color.lstrip('#')
+    return [int(hex_color[i:i+2], 16) / 255.0 for i in (0, 2, 4)]
+
+def add_3d_colors(day_reader):
+    # Add colors to the 3D visualization
+    polydata = day_reader.GetOutput() # THIS LOADS THE POLYDATA INTO A VARIABLE (THIS IS HOW YOU ACCESS AND UPDATE DATA)
+
+    point_data = polydata.GetPointData()
+
+    # Access arrays as vtkAbstractArray
+    polydata_agent_type_array = point_data.GetAbstractArray("agent_type")
+    polydata_color_array = point_data.GetAbstractArray("color")
+
+    agent_type_list = []
+    for i in range(1, polydata_agent_type_array.GetNumberOfTuples()):
+        agent_type_list.append(polydata_agent_type_array.GetValue(i)) 
+
+    colors_list = []
+    for i in range(1, polydata_color_array.GetNumberOfTuples()):
+        colors_list.append(polydata_color_array.GetValue(i)) 
+
+    # Convert to RGB and repeat as necessary
+    rgb_colors = np.array([hex_to_rgb(color) for color in colors_list])
+    num_points = polydata.GetNumberOfPoints()
+    if len(rgb_colors) < num_points:
+        rgb_colors = np.tile(rgb_colors, (num_points // len(rgb_colors) + 1, 1))[:num_points]
+
+    # Create a vtkUnsignedCharArray for colors
+    color_array = vtkUnsignedCharArray()
+    color_array.SetName("Colors")
+    color_array.SetNumberOfComponents(3)  # RGB has 3 components
+    color_array.SetNumberOfTuples(num_points)
+
+    # Populate the color array
+    for i in range(num_points):
+        color_array.SetTuple3(i, *(rgb_colors[i] * 255))  # Convert back to 0-255 range
+
+    # Assign the color array to the polydata
+    polydata.GetPointData().SetScalars(color_array)
+
+    return polydata
+
 
 # -----------------------------------------------------------------------------
 # Callbacks
@@ -170,6 +222,7 @@ def get_3d_viz(day):
 @state.change("day")
 def update_day(day, **kwargs):
     # print(f"Updating visualizations for day: {day}")
+    day_start_time = time.time()
     if day is None:
         return
 
@@ -177,22 +230,21 @@ def update_day(day, **kwargs):
     ctrl.update_2d_viz(get_2d_viz(day))
 
     # Update 3D viz
-    vtk_path = os.path.join(vtk_dir, f"day{day}_vis.vtk")
-    if os.path.exists(vtk_path):
-        if day not in day_readers:
-            reader = vtkPolyDataReader()
-            reader.SetFileName(vtk_path)
-            reader.Update()
-            day_readers[day] = reader
-        mapper.SetInputConnection(day_readers[day].GetOutputPort())
-    else:   # VTK file for the day not found
-        # TODO: handle this case propoerly
-        if day % 2 == 0:
-            mapper.SetInputConnection(day_readers[0].GetOutputPort())
-        else:
-            mapper.SetInputConnection(day_readers[1].GetOutputPort())
+    day_vtk_path = os.path.join(vtk_dir, f"{day}_data_coords.vtk")
+    if day not in day_readers:
+        reader = vtkPolyDataReader()
+        reader.SetFileName(day_vtk_path)
+        reader.Update()
+        day_readers[day] = reader
+
+    # Update the colors for the 3D visualization
+    polydata = add_3d_colors(day_readers[day])
+    
+    mapper.SetInputConnection(day_readers[day].GetOutputPort())
+    mapper.SetInputData(polydata)
     renderWindow.Render()
     ctrl.view_update()
+    print(f"Prcessed day {day} in {time.time() - day_start_time} seconds")
 
 # -----------------------------------------------------------------------------
 # Layout 
@@ -233,9 +285,7 @@ with SinglePageLayout(server) as layout:
                             step=1,
                             label="Day",
                             style="height: 100%; width: 90%;",
-                            # tick_labels=True,
-                            # tick_size=4,
-                            # ticks="always",
+                            thumb_label="always",
                         )
 
     with layout.toolbar:
