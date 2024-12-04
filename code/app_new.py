@@ -40,7 +40,7 @@ data_dir = os.path.join(CURRENT_DIRECTORY, f"../data/{data_filename}")
 data_path = os.path.join(data_dir, f"{data_filename}.csv")
 vtk_dir = os.path.join(data_dir, "dayx_vis_vtk")
 map_vtk_path = os.path.join(CURRENT_DIRECTORY, "../data/map.vtk")
-
+html_dir = os.path.join(data_dir, "webGL_output")
 # -----------------------------------------------------------------------------
 # Data loading
 # -----------------------------------------------------------------------------
@@ -217,6 +217,16 @@ def add_3d_colors(day_reader):
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
+# Initialize iframe_src to the path for day 0 when the server starts
+state.iframe_src = os.path.join(html_dir, "webGL_day0", "webG.html")
+
+def update_iframe_src(day):
+    iframe_src = os.path.join(html_dir, f'webGL_day{day}', "webG.html")
+    if os.path.exists(iframe_src):
+        state.iframe_src = iframe_src  # Store the iframe source in the state
+        print(f"Updated iframe src to: {iframe_src}")
+    else:
+        print(f"Warning: Iframe source not found for day {day} at {iframe_src}")
 
 @state.change("day")
 def update_day(day, **kwargs):
@@ -228,23 +238,19 @@ def update_day(day, **kwargs):
     # Update 2D viz
     ctrl.update_2d_viz(get_2d_viz(day))
 
-    # Update 3D viz
-    day_vtk_path = os.path.join(vtk_dir, f"{day}_data_coords.vtk")
-    if day not in day_readers:
-        reader = vtkPolyDataReader()
-        reader.SetFileName(day_vtk_path)
-        reader.Update()
-        day_readers[day] = reader
+    # Update the 3D viz (iframe)
+    # day_html_path = os.path.join(html_dir, f'webGL_day{day}', "webG.html")
+    # if os.path.exists(day_html_path):
+    #     # Set the iframe to load the corresponding HTML file
+    #     ctrl.update_3d_viz(day_html_path)
+    # else:
+    #     print(f"HTML widget for day {day} not found.")
 
-    # Update the colors for the 3D visualization
-    polydata = add_3d_colors(day_readers[day])
-    
-    mapper.SetInputConnection(day_readers[day].GetOutputPort())
-    mapper.SetInputData(polydata)
-    renderWindow.Render()
-    ctrl.view_update()
-    print(f"Prcessed day {day} in {time.time() - day_start_time} seconds")
 
+    # Update the iframe with the new 3D view for the selected day
+    update_iframe_src(day)
+
+    print(f"Processed day {day} in {time.time() - day_start_time} seconds")
 
 
 
@@ -265,12 +271,11 @@ with SinglePageLayout(server) as layout:
             with vuetify.VRow(classes="fill-height"):
                 # Left part: 3d viz
                 with vuetify.VCol(classes="d-flex flex-column align-center", style="width: 90%;"):
-                    with vuetify.VContainer(fluid=True, classes="pa-0 fill-height"):
-                        view = vtk.VtkLocalView(renderWindow)
-                        ctrl.view_update = view.update
-                        ctrl.view_reset_camera = view.reset_camera
-                        # view = vtk.VtkRemoteView(renderWindow)
-                        # ctrl.on_server_ready.add(view.update)
+                    with vuetify.VCard(classes="fill-height fill-width"):
+                        iframe_src = state.iframe_src  # Dynamically bind to the iframe_src from state
+                        vuetify.VCardText(
+                            f'<iframe src="{iframe_src}" width="100%" height="100%" frameborder="0"></iframe>'
+                        )
                 
                 # Right part: Fig 1 (70%) and Fig 2 (30%)
                 with vuetify.VCol(classes="fill-height"):
