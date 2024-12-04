@@ -266,11 +266,13 @@ with SinglePageLayout(server) as layout:
                 # Left part: 3d viz
                 with vuetify.VCol(classes="d-flex flex-column align-center", style="width: 90%;"):
                     with vuetify.VContainer(fluid=True, classes="pa-0 fill-height"):
-                        view = vtk.VtkLocalView(renderWindow)
+                        # view = vtk.VtkLocalView(renderWindow)
+                        # ctrl.view_update = view.update
+                        # ctrl.view_reset_camera = view.reset_camera
+                        view = vtk.VtkRemoteView(renderWindow)
+                        ctrl.on_server_ready.add(view.update)
                         ctrl.view_update = view.update
                         ctrl.view_reset_camera = view.reset_camera
-                        # view = vtk.VtkRemoteView(renderWindow)
-                        # ctrl.on_server_ready.add(view.update)
                 
                 # Right part: Fig 1 (70%) and Fig 2 (30%)
                 with vuetify.VCol(classes="fill-height"):
