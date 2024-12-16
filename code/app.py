@@ -14,6 +14,7 @@ import os
 import numpy as np
 import time
 
+from vtkmodules.vtkCommonColor import vtkNamedColors
 from vtkmodules.vtkIOLegacy import vtkPolyDataReader
 from vtkmodules.vtkRenderingCore import (
     vtkActor,
@@ -33,7 +34,9 @@ CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(__file__))
 # Paths
 # -----------------------------------------------------------------------------
 # Modify here
-data_filename = "Latest_Data_on_Lassa_fever77_HumansOnly"
+# data_filename = "Latest_Data_on_Lassa_fever77_HumansOnly"
+data_filename = "SimData1_HumansOnly"
+# data_filename = "SimData2_HumansOnly"
 
 # No need to modify below
 data_dir = os.path.join(CURRENT_DIRECTORY, f"../data/{data_filename}")
@@ -57,6 +60,8 @@ df['Time'] = df['Time'].astype(int)
 renderer = vtkRenderer()
 renderWindow = vtkRenderWindow()
 renderWindow.AddRenderer(renderer)
+renderer.SetBackground(13, 93, 180)  # RGB values for cream white
+renderer.SetBackground(vtkNamedColors().GetColor3d("SlateGray"))
 
 renderWindowInteractor = vtkRenderWindowInteractor()
 renderWindowInteractor.SetRenderWindow(renderWindow)
@@ -264,7 +269,7 @@ with SinglePageLayout(server) as layout:
             # Row to hold two parts: left and right
             with vuetify.VRow(classes="fill-height"):
                 # Left part: 3d viz
-                with vuetify.VCol(classes="d-flex flex-column align-center", style="width: 90%;"):
+                with vuetify.VCol(classes="d-flex flex-column align-center", style="width: 90%; flex: 1.5;"):
                     with vuetify.VContainer(fluid=True, classes="pa-0 fill-height"):
                         # view = vtk.VtkLocalView(renderWindow)
                         # ctrl.view_update = view.update
@@ -283,7 +288,6 @@ with SinglePageLayout(server) as layout:
                         ).update
 
                     # Bottom right: Fig 2 (takes bottom 30%)
-                    # TODO: ticks
                     with vuetify.VRow(classes="d-flex flex-column align-center", style="height: 10%;"):
                         vuetify.VSlider(
                             v_model=("day", 0),
