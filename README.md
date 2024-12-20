@@ -1,5 +1,7 @@
 # CSCI2370 Project
 
+A project to visualize the simulated data of Lassa fever spread.
+
 ## Setting up
 0. **Python version in venv needs to be the same version used your Paraview.** If you have Paraview 5.13.0, then you need Python 3.10.
 
