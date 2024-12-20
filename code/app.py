@@ -34,8 +34,8 @@ CURRENT_DIRECTORY = os.path.abspath(os.path.dirname(__file__))
 # Paths
 # -----------------------------------------------------------------------------
 # Modify here
-# data_filename = "Latest_Data_on_Lassa_fever77_HumansOnly"
-data_filename = "SimData1_HumansOnly"
+data_filename = "Latest_Data_on_Lassa_fever77_HumansOnly"
+# data_filename = "SimData1_HumansOnly"
 # data_filename = "SimData2_HumansOnly"
 
 # No need to modify below
@@ -155,6 +155,7 @@ def get_2d_viz(day):
         title=f"Human population in each state on day {day}",
         yaxis_title="Number of People (10<sup>4</sup>)",
         yaxis=dict(range=[0, max_y_value]),
+        font=dict(size=18),
     )
     return fig
 
@@ -248,10 +249,7 @@ def update_day(day, **kwargs):
     mapper.SetInputData(polydata)
     renderWindow.Render()
     ctrl.view_update()
-    print(f"Prcessed day {day} in {time.time() - day_start_time} seconds")
-
-
-
+    # print(f"Prcessed day {day} in {time.time() - day_start_time} seconds")
 
 
 # -----------------------------------------------------------------------------
@@ -297,6 +295,7 @@ with SinglePageLayout(server) as layout:
                             label="Day",
                             style="height: 100%; width: 90%;",
                             thumb_label="always",
+                            font=dict(size=18)
                         )
 
     with layout.toolbar:
