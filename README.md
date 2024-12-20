@@ -25,8 +25,7 @@ pip install trame trame-vtk trame-vuetify
 deactivate
 ```
 
-
-## Running the app
+## Running the app using vtk
 
 0. Make sure you are in `venv`: 
 
@@ -34,7 +33,13 @@ deactivate
 source ./.venv/bin/activate
 ```
 
-1. To run the app:
+1. Make sure that all necessary data is there:
+    * [`map.vtk`](data/map.vtk) should be placed in the `data` folder directly.
+    * e.g., to visualize `Latest_Data_on_Lassa_fever77_HumansOnly` data:
+        * make sure that [`Latest_Data_on_Lassa_fever77_HumansOnly` folder](data/Latest_Data_on_Lassa_fever77_HumansOnly) exists in the `data` folder.
+        * In the subfolder, there should be [`Latest_Data_on_Lassa_fever77_HumansOnly.csv`](data/Latest_Data_on_Lassa_fever77_HumansOnly/Latest_Data_on_Lassa_fever77_HumansOnly.csv) & [`dayx_vis_vtk` folder](data/Latest_Data_on_Lassa_fever77_HumansOnly/dayx_vis_vtk), which contains vtk for each day.
+
+2. To run the app:
 
     * To run the Trame app, use the following command in the terminal:
         ```sh
@@ -54,4 +59,14 @@ source ./.venv/bin/activate
         --data [path_to_your_data.pvsm]
         ```
         * NOTE: make sure to change the python or Paraview app versions as needed
-        
+
+
+
+## 3D view using Paraview PVSM
+
+```sh
+/Applications/ParaView-5.13.0.app/Contents/bin/pvpython \
+code/PVSMLoader.py  \
+--venv .pvenv/ \
+--data data/pvsm/day0_vis.pvsm
+```
