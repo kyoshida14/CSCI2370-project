@@ -1,9 +1,5 @@
 # CSCI2370 Project
 
-## TODOs
-* description
-* requirements.txt
-
 ## Setting up
 0. **Python version in venv needs to be the same version used your Paraview.** If you have Paraview 5.13.0, then you need Python 3.10.
 
